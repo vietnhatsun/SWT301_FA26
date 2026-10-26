@@ -71,21 +71,29 @@ public class LoginTest {
                 "Không thấy thông báo lỗi username");
     }
 
+    @Order(3)
+    @ParameterizedTest(name = "[{index}] user=''{0}'' pass=''{1}'' → {2}")
+    @CsvSource({
             "tomsmith,  SuperSecretPassword!, success",   // valid
             "wronguser, SuperSecretPassword!, error",     // invalid username
             "tomsmith,  wrongpassword,        error",     // invalid password
             "'',        '',                   error"      // empty credentials
     })
+    @DisplayName("Multiple login attempts using @CsvSource")
+    void testLoginWithMultipleParameters(String username, String password, String expectedResult) {
         driver.get("https://the-internet.herokuapp.com/login");
 
         driver.findElement(By.id("username")).sendKeys(username);
         driver.findElement(By.id("password")).sendKeys(password);
         driver.findElement(By.cssSelector("button[type='submit']")).click();
 
+        By messageLocator = expectedResult.equals("success")
                 ? By.cssSelector(".flash.success")
                 : By.cssSelector(".flash.error");
 
+        WebElement message = wait.until(ExpectedConditions.visibilityOfElementLocated(messageLocator));
 
+        if (expectedResult.equals("success")) {
             assertTrue(message.getText().contains("You logged into a secure area!"));
         } else {
             assertTrue(message.getText().toLowerCase().contains("invalid"));
