@@ -1,0 +1,8 @@
+target/
+Exercise1_SeleniumB/target/
+.idea/
+Exercise1_SeleniumB/.idea/
+*.iml
+Exercise1_SeleniumB/*.iml
+out/
+.DS_Store
